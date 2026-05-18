@@ -100,9 +100,9 @@ const PersonligInfoForm = () => {
           }`}
         >
           <section className="flex flex-col gap-4 rounded-lg px-4 py-3">
-            <input className={inputStyle} placeholder="Navn" onChange={(e) => setNavn(e.target.value)}/>
-            <input className={inputStyle}  placeholder="Telefon nummer"/>
-            <input className={inputStyle}  placeholder="Epost adresse"/>
+            <input className={inputStyle} value={navn} placeholder="Navn" onChange={(e) => setNavn(e.target.value)}/>
+            <input className={inputStyle}  value={epostAdresse} placeholder="Telefon nummer" onChange={(e) => setEpostAdresse(e.target.value)}/>
+            <input className={inputStyle}  value={telefonNummer} placeholder="Epost adresse" onChange={(e) => setTelefonNummer(e.target.value)}/>
             <button onClick={() => checkForm()}className="cursor-pointer border-0 py-2 px-3 rounded-2xl bg-yellow-400 text-black w-[50%] mx-auto hover:scale-105 active:scale-95 transition duration-300">Start nå</button>
           </section>
         </div>
