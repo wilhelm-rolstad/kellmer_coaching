@@ -7,6 +7,7 @@ html {
 
 body {
   margin: 0;
+  overflow-x: hidden;
 }
 
 #root {
@@ -51,11 +52,4 @@ body {
 
 .anmeldelser-track {
   will-change: transform;
-}
-
-@media (max-width: 1023px) {
-  .anmeldelser-scroll {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
 }

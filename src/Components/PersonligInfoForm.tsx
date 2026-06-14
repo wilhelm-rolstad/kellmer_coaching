@@ -4,6 +4,8 @@ const PersonligInfoForm = () => {
     const [step, setStep] = useState(1)
     const [selectedGoal, setSelectedGoal] = useState('')
     const [selectedAgeGroup, setSelectedAgeGroup] = useState('')
+    const [statusMessage, setStatusMessage] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const inputStyle="border-2 border-(--color-border-cards) py-2 px-3 rounded-lg w-full focus:outline-none focus:bg-white transition duration-300"
 
     const [navn, setNavn] = useState("")
@@ -33,13 +35,49 @@ const PersonligInfoForm = () => {
     const progressWidth = step === 1 ? 'w-1/3' : step === 2 ? 'w-2/3' : 'w-full'
 
     async function checkForm(){
-        console.log(selectedGoal + " " + selectedAgeGroup)
+        setStatusMessage("")
+        setIsSubmitting(true)
+
+        try {
+          const response = await fetch("/api/contact", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: navn,
+              email: epostAdresse,
+              phoneNumber: telefonNummer,
+              selectedGoal,
+              selectedAgeGroup,
+              source: "personlig-info-form",
+            }),
+          })
+
+          const result = await response.json()
+
+          if (!response.ok) {
+            setStatusMessage(result.error ?? "Kunne ikke sende skjemaet.")
+            return
+          }
+
+          setStatusMessage("Skjema sendt. Du vil bli kontaktet snart.")
+          setNavn("")
+          setEpostAdresse("")
+          setTelefonNummer("")
+          setSelectedGoal("")
+          setSelectedAgeGroup("")
+          setStep(1)
+        } catch {
+          setStatusMessage("Kunne ikke kontakte serveren.")
+        } finally {
+          setIsSubmitting(false)
+        }
     }
 
   return (
     <section className=" flex flex-col gap-2 rounded-xl border-2 border-(--color-border-cards) bg-(--color-navy-cards) p-5 text-(--color-text-yellow) w-full">
       <h1 className="text-2xl">Optimal prestasjon</h1>
-        <p className="absolute left-30 top-5">Step</p>
       <div className="relative w-full overflow-hidden">
         <span className="block h-2 w-full rounded bg-(--color-border-cards)" />
         <span
@@ -92,7 +130,7 @@ const PersonligInfoForm = () => {
               {age}
             </button>
           ))}
-        </div>
+        </div>2
 
         <div
           className={`absolute inset-0 transition-all duration-300 ${
@@ -101,9 +139,12 @@ const PersonligInfoForm = () => {
         >
           <section className="flex flex-col gap-4 rounded-lg px-4 py-3">
             <input className={inputStyle} value={navn} placeholder="Navn" onChange={(e) => setNavn(e.target.value)}/>
-            <input className={inputStyle}  value={epostAdresse} placeholder="Telefon nummer" onChange={(e) => setEpostAdresse(e.target.value)}/>
-            <input className={inputStyle}  value={telefonNummer} placeholder="Epost adresse" onChange={(e) => setTelefonNummer(e.target.value)}/>
-            <button onClick={() => checkForm()}className="cursor-pointer border-0 py-2 px-3 rounded-2xl bg-yellow-400 text-black w-[50%] mx-auto hover:scale-105 active:scale-95 transition duration-300">Start nå</button>
+            <input className={inputStyle}  value={epostAdresse} placeholder="Epost adresse" type="email" onChange={(e) => setEpostAdresse(e.target.value)}/>
+            <input className={inputStyle}  value={telefonNummer} placeholder="Telefon nummer" onChange={(e) => setTelefonNummer(e.target.value)}/>
+            <button onClick={() => checkForm()} disabled={isSubmitting} className="cursor-pointer border-0 py-2 px-3 rounded-2xl bg-yellow-400 text-black w-full mx-auto hover:scale-105 active:scale-95 transition duration-300 disabled:cursor-not-allowed disabled:opacity-70 sm:w-[50%]">
+              {isSubmitting ? "Sender..." : "Start nå"}
+            </button>
+            {statusMessage ? <p className="text-center text-sm text-(--color-text-yellow)">{statusMessage}</p> : null}
           </section>
         </div>
       </div>
@@ -111,7 +152,7 @@ const PersonligInfoForm = () => {
         <button
             type="button"
             onClick={() => setStep((prev) => prev - 1)}
-            className="cursor-pointer rounded-lg border px-4 py-2 text-sm w-[30%]">
+            className="cursor-pointer rounded-lg border px-4 py-2 text-sm w-full sm:w-[30%]">
             Tilbake
         </button>
         )}

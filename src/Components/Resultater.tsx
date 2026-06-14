@@ -1,37 +1,36 @@
 import { useEffect, useRef } from "react";
 import AnmeldelseWidget from "./ResultaterWidget";
-import kell from "../assets/bg_kell.png";
+import Ravn from "../assets/Ravn.jpeg";
+import Stefan from "../assets/Stefan.jpeg";
+import Magnus from "../assets/Magnus.jpeg";
+import Vetle from "../assets/Vetle.jpeg";
+import Tollef from "../assets/Tollef.jpeg";
 
 const anmeldelser = [
   {
-    navn: "Herman K.",
+    navn: "Ravn",
     beskrivelse: "Vektnedgang 3 måneder",
-    bilde1: kell,
-    bilde2: kell,
+    bilde1: Ravn,
   },
   {
-    navn: "Henrik",
+    navn: "Stefan",
     beskrivelse: "Bedre struktur i hverdagen",
-    bilde1: kell,
-    bilde2: kell,
+    bilde1: Stefan,
   },
   {
-    navn: "Marius",
+    navn: "Tollef",
     beskrivelse: "Sterkere og lettere kropp",
-    bilde1: kell,
-    bilde2: kell,
+    bilde1: Tollef,
   },
   {
-    navn: "Sander",
+    navn: "Magnus",
     beskrivelse: "Ned 8 kg på 10 uker",
-    bilde1: kell,
-    bilde2: kell,
+    bilde1: Magnus,
   },
   {
-    navn: "Kristian",
+    navn: "Vetle",
     beskrivelse: "Bygget gode vaner",
-    bilde1: kell,
-    bilde2: kell,
+    bilde1: Vetle,
   },
 ];
 
@@ -52,10 +51,20 @@ export default function Anmeldelser() {
 
     let frameId = 0;
     let previousTime = 0;
+    let currentScrollPosition = 0;
+    let isAutoScrolling = false;
     const pauseAfterInteractionMs = 1200;
-    const speed = 0.04;
+    const speed = 0.08;
 
     const getSegmentWidth = () => track.scrollWidth / 3;
+    const setInitialScroll = () => {
+      const segmentWidth = getSegmentWidth();
+
+      if (segmentWidth > 0) {
+        currentScrollPosition = segmentWidth;
+        container.scrollLeft = currentScrollPosition;
+      }
+    };
 
     const normalizeScroll = () => {
       const segmentWidth = getSegmentWidth();
@@ -71,7 +80,15 @@ export default function Anmeldelser() {
       }
     };
 
-    container.scrollLeft = getSegmentWidth();
+    const syncAfterLayout = () => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          setInitialScroll();
+        });
+      });
+    };
+
+    syncAfterLayout();
 
     const tick = (time: number) => {
       if (!previousTime) {
@@ -82,10 +99,15 @@ export default function Anmeldelser() {
       previousTime = time;
 
       const timeSinceInteraction = time - lastInteractionRef.current;
+      const segmentWidth = getSegmentWidth();
 
-      if (timeSinceInteraction > pauseAfterInteractionMs) {
-        container.scrollLeft += delta * speed;
+      if (segmentWidth > 0 && timeSinceInteraction > pauseAfterInteractionMs) {
+        currentScrollPosition += delta * speed;
+        isAutoScrolling = true;
+        container.scrollLeft = currentScrollPosition;
         normalizeScroll();
+        currentScrollPosition = container.scrollLeft;
+        isAutoScrolling = false;
       }
 
       frameId = window.requestAnimationFrame(tick);
@@ -93,15 +115,38 @@ export default function Anmeldelser() {
 
     frameId = window.requestAnimationFrame(tick);
 
-    const handleResize = () => {
-      container.scrollLeft = getSegmentWidth();
+    const handleInteraction = () => {
+      lastInteractionRef.current = performance.now();
+      currentScrollPosition = container.scrollLeft;
     };
 
-    window.addEventListener("resize", handleResize);
+    const handleScroll = () => {
+      if (!isAutoScrolling) {
+        currentScrollPosition = container.scrollLeft;
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(() => {
+      syncAfterLayout();
+    });
+
+    resizeObserver.observe(container);
+    resizeObserver.observe(track);
+    Array.from(track.querySelectorAll("img")).forEach((image) => {
+      if (!image.complete) {
+        image.addEventListener("load", syncAfterLayout, { once: true });
+      }
+    });
+    container.addEventListener("touchstart", handleInteraction, { passive: true });
+    container.addEventListener("pointerdown", handleInteraction);
+    container.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
+      container.removeEventListener("touchstart", handleInteraction);
+      container.removeEventListener("pointerdown", handleInteraction);
+      container.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -114,13 +159,13 @@ export default function Anmeldelser() {
 
       <section
         ref={scrollRef}
-        className="anmeldelser-scroll mt-6 overflow-x-auto pb-4"
+        className="anmeldelser-scroll mt-6 overflow-x-auto px-4 pb-4"
       >
         <div ref={trackRef} className="anmeldelser-track flex w-max gap-4 pr-4">
           {loopedAnmeldelser.map((anmeldelse, index) => (
             <div
               key={`${anmeldelse.navn}-${index}`}
-              className="w-[85vw] shrink-0 sm:w-[calc(50vw-1rem)] lg:w-[calc((100vw-8rem)/3)] lg:max-w-[24rem]"
+              className="w-[56vw] shrink-0 sm:w-[16rem] lg:w-[20rem]"
             >
               <AnmeldelseWidget {...anmeldelse} />
             </div>

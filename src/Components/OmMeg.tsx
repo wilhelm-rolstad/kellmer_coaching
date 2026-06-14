@@ -3,10 +3,10 @@ import Stage from '../assets/stage.jpeg'
 export default function OmMeg(){
     return(
         <>
-        <section id="om-jk-coaching" className="flex scroll-mt-24 justify-center gap-10 text-white">
-            <section className=" w-[50%] p-2">
-                <h1 className="text-3xl text-(--color-text-yellow)">Om JK-Coaching</h1>
-                <p className="text-lg text-(--color-text-darker-yellow) mt-4">Denne coaching tjenesten er utviklet for deg som ønsker å nå målene dine uansett hva. 
+        <section id="om-jk-coaching" className="flex scroll-mt-24 flex-col justify-center gap-10 text-white md:flex-row">
+            <section className="w-full p-2 md:w-[50%]">
+                <h1 className="text-lg md:text-3xl text-(--color-text-yellow)">Om JK-Coaching</h1>
+                <p className="text-xs md:text-lg text-(--color-text-darker-yellow) mt-4">Denne coaching tjenesten er utviklet for deg som ønsker å nå målene dine uansett hva. 
                     <br/> 
                     <br/>
                     Jeg har mer enn 6 års treningserfaring, en Bachelor i psykologi, har coachet i 3+ år, og driver aktivt med bodybulding.
@@ -23,7 +23,7 @@ export default function OmMeg(){
                 </p>
             </section>
 
-            <section className="w-[50%] overflow-hidden rounded-2xl border-2 border-(--color-border-cards)">
+            <section className="w-full overflow-hidden rounded-2xl border-2 border-(--color-border-cards) md:w-[50%]">
                 <img src={Stage}/>
             </section>
         </section>

@@ -12,14 +12,14 @@ const Heropage = () => {
   return (
 
     
-    <section id="top" className="flex flex-col gap-20">
+    <section id="top" className="flex flex-col gap-5 md:gap-20 w-full ">
         <div className="ml-2">
-        <h1 className="text-5xl text-white ">JK Coaching</h1>
+        <h1 className="text-2xl md:text-5xl text-white ">JK Coaching</h1>
         <p className="text-lg text-(--color-text-yellow)"> undertekst </p>
         </div>
-        <div className=" flex w-full gap-5">
+        <div className=" flex w-full flex-col gap-5 md:flex-row">
             <PersonligInfoForm/>
-            <section className="w-[80%] rounded-2xl bg-cover bg-center p-5 overflow-hidden"
+            <section className="w-full overflow-hidden rounded-2xl bg-cover bg-center p-5 md:w-[80%]"
             style={{ backgroundImage: `url(${bgKell})` }}>
                <img src={Kellmer} alt="Kellmer" className="translate-y-6"/>
 

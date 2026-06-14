@@ -5,8 +5,8 @@ const stepNumberClassName =
 
 export default function KontaktSeksjon() {
   return (
-    <div id="kontakt" className="mx-auto flex scroll-mt-24 gap-10 text-white">
-      <section className="flex w-[50%] flex-col gap-10">
+    <div id="kontakt" className="mx-auto flex scroll-mt-24 flex-col gap-10 text-white md:flex-row">
+      <section className="flex w-full flex-col gap-10 md:w-[50%]">
         <h1 className="text-2xl text-white">Tre steg til suksess</h1>
 
         <div className="flex items-center gap-4">
@@ -41,7 +41,7 @@ export default function KontaktSeksjon() {
         </div>
       </section>
 
-      <div className="w-[50%]">
+      <div className="w-full md:w-[50%]">
         <KontaktForm />
       </div>
     </div>

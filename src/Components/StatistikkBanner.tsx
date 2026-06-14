@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type StatItem = {
   value: number;
@@ -17,14 +17,20 @@ function CountUpValue({
   value,
   suffix = "",
   duration = 2000,
+  shouldAnimate,
 }: {
   value: number;
   suffix?: string;
   duration?: number;
+  shouldAnimate: boolean;
 }) {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
+    if (!shouldAnimate) {
+      return;
+    }
+
     let frameId = 0;
     const startTime = performance.now();
 
@@ -44,7 +50,7 @@ function CountUpValue({
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [duration, value]);
+  }, [duration, shouldAnimate, value]);
 
   return (
     <h2 className="text-4xl">
@@ -56,12 +62,47 @@ function CountUpValue({
 
 export default function StatistikkBanner() {
   const divStyle = "px-4 flex flex-col items-center justify-center";
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section || hasEnteredViewport) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && entry.intersectionRect.height > 1 && entry.intersectionRect.width > 1) {
+          setHasEnteredViewport(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasEnteredViewport]);
 
   return (
-    <section className="relative left-1/2 mt-10 flex w-screen -translate-x-1/2 items-center justify-evenly gap-5 bg-(--color-navy-cards) py-5 text-white border-y border-(--color-border-cards)">
+    <section
+      ref={sectionRef}
+      className="relative left-1/2 mt-10 flex w-screen flex-wrap items-center justify-evenly gap-5 border-y border-(--color-border-cards) bg-(--color-navy-cards) py-5 text-white -translate-x-1/2"
+    >
       {stats.map((stat) => (
         <div key={`${stat.label}-${stat.value}`} className={divStyle}>
-          <CountUpValue value={stat.value} suffix={stat.suffix} />
+          <CountUpValue
+            value={stat.value}
+            suffix={stat.suffix}
+            shouldAnimate={hasEnteredViewport}
+          />
           <p className="text-(--color-text-secondary)">{stat.label}</p>
         </div>
       ))}

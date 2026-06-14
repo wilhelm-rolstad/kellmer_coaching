@@ -11,6 +11,9 @@ export default function AnmeldelseWidget({
   bilde1,
   bilde2,
 }: AnmeldelseProps) {
+  const singleImageClassName = "aspect-[1/1] w-full rounded-lg object-cover";
+  const splitImageClassName = "aspect-[5/6] w-full rounded-lg object-cover";
+
   return (
     <section className="flex h-full flex-col gap-2 rounded-xl border border-[var(--color-border-cards)] bg-[var(--color-navy-cards)] p-2">
       <div className="flex items-center justify-center gap-2">
@@ -18,14 +21,14 @@ export default function AnmeldelseWidget({
           <img
             alt={`${navn} resultat 1`}
             src={bilde1}
-            className="h-40 w-full rounded-lg object-cover"
+            className={bilde2 ? splitImageClassName : singleImageClassName}
           />
         ) : null}
         {bilde2 ? (
           <img
             alt={`${navn} resultat 2`}
             src={bilde2}
-            className="h-40 w-full rounded-lg object-cover"
+            className={splitImageClassName}
           />
         ) : null}
       </div>
@@ -35,9 +38,6 @@ export default function AnmeldelseWidget({
           <p className="text-sm text-(--color-text-secondary)">
             {beskrivelse}
           </p>
-        </div>
-        <div className="ml-auto rounded-2xl bg-(--color-text-yellow) px-3 py-1 text-sm text-black">
-          -10.0kg
         </div>
       </section>
     </section>
